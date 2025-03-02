@@ -4,45 +4,55 @@
 #include "Rational.h"
 #include "vector"
 #include <algorithm>
+#include <functional>
 
-//class Compare {
-//public:
-//    bool operator()(double a, double b) const {
-//        return a < b;
-//    }
-//};
-
-class Point {
+class ToUpper {
 public:
-    Point(double x, double y):_x(x),_y(y){}
-    double _x;
-    double _y;
+    char operator()(char c)const {
+        if (c>='a'&&c<='z') {
+            return static_cast<char>(c - 'a' + 'A');
+        }
+        return c;
+    }
 };
 
 int main()
 {
-    Point p0(0.0,0.0);
-    Point p1(2.5,3.0);
-    Point p2(12.5,3.5);
-    double distance = 10.0;
+    auto f1 = bind([](int i, int b)->int {
+        return i + b;
+    }, placeholders::_1, 6);
 
-    auto inFirstQ = [](const Point& p)->bool {
-        return p._x >= 0 && p._y >= 0;
-    };
+    cout << f1(5) << endl;
 
-    auto inCircle = [&p0,distance](const Point& p)->bool {
-        double res = sqrt((p._x - p0._x) * (p._x - p0._x) + (p._y - p0._y) * (p._y - p0._y));
-        return res <= distance;
-    };
-    
-    auto inFirstQandCircle = [&](const Point& p)->bool {
-        return inFirstQ(p) && inCircle(p);
-    };
+    ToUpper toU;
+    cout << toU('n') << endl;
+    cout << toU('N') << endl;
 
-    cout << inFirstQandCircle(p1) << endl;
-    cout << inFirstQandCircle(p2) << endl;
+    char c1 = 'a';
+    char c2 = 'b';
+
+    auto equal = equal_to<char>{};
+
+    cout << equal(c1, c2) << endl;
+
+    string s1 = "helloworld";
+    string s2 = "worl";
+    auto res = search(s1.begin(), s1.end(), s2.begin(), s2.end(),
+        bind(equal_to<char>{},
+            bind(toU, placeholders::_1),
+            bind(toU, placeholders::_2)));
+
+    if (res != s1.end()) {
+        cout << "is a substring" << endl;
+    }
+    else
+    {
+        cout << "not a substring" << endl;
+    }
 
     return 0;
+
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
