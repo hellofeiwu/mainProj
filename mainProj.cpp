@@ -16,6 +16,23 @@ public:
     }
 };
 
+class TestMemfn {
+public:
+    void showNoPram() {
+        cout << "showNoPram()" << endl;
+    }
+    void showParam(int i) {
+        cout << "showParam(int i) " << i << endl;
+    }
+
+    int getN() {
+        return _n;
+    }
+
+private:
+    int _n = 12;
+};
+
 int main()
 {
     auto f1 = bind([](int i, int b)->int {
@@ -49,6 +66,12 @@ int main()
     {
         cout << "not a substring" << endl;
     }
+
+    TestMemfn tf;
+    mem_fn(&TestMemfn::showNoPram)(tf);
+    mem_fn(&TestMemfn::showParam)(tf,10);
+
+    cout <<mem_fn(&TestMemfn::getN)(tf) <<endl;
 
     return 0;
 
