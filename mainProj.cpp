@@ -1,77 +1,61 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "Rational.h"
-#include "vector"
-#include <algorithm>
-#include <functional>
 
-class ToUpper {
-public:
-    char operator()(char c)const {
-        if (c>='a'&&c<='z') {
-            return static_cast<char>(c - 'a' + 'A');
-        }
-        return c;
-    }
-};
+#include <iostream>
+using namespace std;
 
-class TestMemfn {
-public:
-    void showNoPram() {
-        cout << "showNoPram()" << endl;
-    }
-    void showParam(int i) {
-        cout << "showParam(int i) " << i << endl;
+void getMemory1(char* p) {
+    p = new char[100];
+}
+
+char* getMemory2() {
+    char p[] = "hello";
+    return p;
+}
+
+void getMemory3(char** p) {
+    *p = new char[100];
+}
+
+void test1() {
+    char* s = nullptr;
+    getMemory1(s);
+    strcpy_s(s,100,"hello");
+    cout << s << endl;
+}
+
+void test2() {
+    char* s = nullptr;
+    s = getMemory2();
+    cout << s << endl;
+}
+
+void test3() {
+    char* s = nullptr;
+    getMemory3(&s);
+    strcpy_s(s, 100, "hello");
+    cout << s << endl;
+    delete s;
+    s = nullptr;
+}
+
+void test4() {
+    char* s = new char[100];
+    strcpy_s(s,100,"hello");
+    
+    if (s!=nullptr) {
+        strcat_s(s,100, "world");
+        cout << s << endl;
     }
 
-    int getN() {
-        return _n;
-    }
-
-private:
-    int _n = 12;
-};
+    delete s;
+    s = nullptr;
+}
 
 int main()
 {
-    auto f1 = bind([](int i, int b)->int {
-        return i + b;
-    }, placeholders::_1, 6);
-
-    cout << f1(5) << endl;
-
-    ToUpper toU;
-    cout << toU('n') << endl;
-    cout << toU('N') << endl;
-
-    char c1 = 'a';
-    char c2 = 'b';
-
-    auto equal = equal_to<char>{};
-
-    cout << equal(c1, c2) << endl;
-
-    string s1 = "helloworld";
-    string s2 = "worl";
-    auto res = search(s1.begin(), s1.end(), s2.begin(), s2.end(),
-        bind(equal_to<char>{},
-            bind(toU, placeholders::_1),
-            bind(toU, placeholders::_2)));
-
-    if (res != s1.end()) {
-        cout << "is a substring" << endl;
-    }
-    else
-    {
-        cout << "not a substring" << endl;
-    }
-
-    TestMemfn tf;
-    mem_fn(&TestMemfn::showNoPram)(tf);
-    mem_fn(&TestMemfn::showParam)(tf,10);
-
-    cout <<mem_fn(&TestMemfn::getN)(tf) <<endl;
+    test3();
 
     return 0;
 
