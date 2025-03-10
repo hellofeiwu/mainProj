@@ -3,100 +3,23 @@
 
 
 #include <iostream>
+#include "SmartPointer.h"
+#include "Rational.h"
 using namespace std;
-
-enum numberType
-{
-    INTEGER,
-    MYRATIONAL,
-    COMPLEX
-};
-
-class Number {
-public:
-    Number() {
-        cout << "in Number()" << endl;
-    }
-    virtual ~Number() {
-        cout << "in ~Number()" << endl;
-    }
-};
-
-class Integer:public Number {
-public:
-    Integer() {
-        cout << "in Integer()" << endl;
-    }
-    ~Integer() {
-        cout << "in ~Integer()" << endl;
-    }
-};
-
-class Myrational:public Number {
-public:
-    Myrational() {
-        cout << "in Myrational()" << endl;
-    }
-    ~Myrational() {
-        cout << "in ~Myrational()" << endl;
-    }
-};
-
-class Complex:public Number {
-public:
-    Complex() {
-        cout << "in Complex()" << endl;
-    }
-    ~Complex() {
-        cout << "in ~Complex()" << endl;
-    }
-};
-
-Number* createNumber(numberType numberType) {
-    switch (numberType)
-    {
-    case INTEGER:
-        return new Integer();
-    case MYRATIONAL:
-        return new Myrational();
-    case COMPLEX:
-        return new Complex();
-    default:
-        return new Number();
-    }
-}
-
-class NumberWrapper {
-public:
-    NumberWrapper(Number* p) {
-        cout << "in NumberWrapper()" << endl;
-        _p = p;
-    }
-    ~NumberWrapper() {
-        cout << "in ~NumberWrapper()" << endl;
-        delete _p;
-    }
-    Number* getP() {
-        return _p;
-    }
-private:
-    Number* _p;
-};
 
 int main()
 {
-    try
-    {
-        NumberWrapper(createNumber(INTEGER));
-        throw "some error";
-    }
-    catch (const char* s)
-    {
-        cout << s << endl;
+    Rational* p = new Rational(3,4);
+    SmartPointer<Rational> sp(p);
+
+    if (sp) {
+        cout << *sp << endl;
+        cout << sp->getNum() << endl;
     }
 
-    //Number* p = new Integer();
-    //delete p;
+    SmartPointer<Rational> sp2;
+    //SmartPointer<Rational> sp3(new Rational(5, 9));
+    sp2 = move(sp);
     
     return 0;
 }
