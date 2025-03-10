@@ -5,61 +5,100 @@
 #include <iostream>
 using namespace std;
 
-void getMemory1(char* p) {
-    p = new char[100];
-}
+enum numberType
+{
+    INTEGER,
+    MYRATIONAL,
+    COMPLEX
+};
 
-char* getMemory2() {
-    char p[] = "hello";
-    return p;
-}
-
-void getMemory3(char** p) {
-    *p = new char[100];
-}
-
-void test1() {
-    char* s = nullptr;
-    getMemory1(s);
-    strcpy_s(s,100,"hello");
-    cout << s << endl;
-}
-
-void test2() {
-    char* s = nullptr;
-    s = getMemory2();
-    cout << s << endl;
-}
-
-void test3() {
-    char* s = nullptr;
-    getMemory3(&s);
-    strcpy_s(s, 100, "hello");
-    cout << s << endl;
-    delete s;
-    s = nullptr;
-}
-
-void test4() {
-    char* s = new char[100];
-    strcpy_s(s,100,"hello");
-    
-    if (s!=nullptr) {
-        strcat_s(s,100, "world");
-        cout << s << endl;
+class Number {
+public:
+    Number() {
+        cout << "in Number()" << endl;
     }
+    virtual ~Number() {
+        cout << "in ~Number()" << endl;
+    }
+};
 
-    delete s;
-    s = nullptr;
+class Integer:public Number {
+public:
+    Integer() {
+        cout << "in Integer()" << endl;
+    }
+    ~Integer() {
+        cout << "in ~Integer()" << endl;
+    }
+};
+
+class Myrational:public Number {
+public:
+    Myrational() {
+        cout << "in Myrational()" << endl;
+    }
+    ~Myrational() {
+        cout << "in ~Myrational()" << endl;
+    }
+};
+
+class Complex:public Number {
+public:
+    Complex() {
+        cout << "in Complex()" << endl;
+    }
+    ~Complex() {
+        cout << "in ~Complex()" << endl;
+    }
+};
+
+Number* createNumber(numberType numberType) {
+    switch (numberType)
+    {
+    case INTEGER:
+        return new Integer();
+    case MYRATIONAL:
+        return new Myrational();
+    case COMPLEX:
+        return new Complex();
+    default:
+        return new Number();
+    }
 }
+
+class NumberWrapper {
+public:
+    NumberWrapper(Number* p) {
+        cout << "in NumberWrapper()" << endl;
+        _p = p;
+    }
+    ~NumberWrapper() {
+        cout << "in ~NumberWrapper()" << endl;
+        delete _p;
+    }
+    Number* getP() {
+        return _p;
+    }
+private:
+    Number* _p;
+};
 
 int main()
 {
-    test3();
+    try
+    {
+        NumberWrapper(createNumber(INTEGER));
+        throw "some error";
+    }
+    catch (const char* s)
+    {
+        cout << s << endl;
+    }
 
+    //Number* p = new Integer();
+    //delete p;
+    
     return 0;
-
-
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
