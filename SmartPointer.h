@@ -25,7 +25,7 @@ public:
 		_p = other._p;
 		other._p = nullptr;
 	}
-	SmartPointer& operator=(SmartPointer&& other) {
+	SmartPointer& operator=(SmartPointer other) {
 		std::swap(_p, other._p);
 		return *this;
 	}
