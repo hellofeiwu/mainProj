@@ -12,18 +12,33 @@ jmp_buf jumpBuffer;
 void foo() {
     cout << "enter foo()" << endl;
     longjmp(jumpBuffer, 1);
-    cout << "exit foo()" << endl;
+    cout << "exit foo()" << endl; // ????
+}
+
+void foo2() {
+    cout << "enter foo2()" << endl;
+    throw 1;
+    cout << "exit foo2()" << endl; // ????
 }
 
 int main()
 {
-    if (setjmp(jumpBuffer)==0) {
-        cout << "befor foo()" << endl;
-        foo();
-        cout << "after foo()" << endl;
+    //if (setjmp(jumpBuffer)==0) {
+    //    cout << "befor foo()" << endl;
+    //    foo();
+    //    cout << "after foo()" << endl; // ????
+    //}
+    //else {
+    //    cout << "jumped back to setjmp" << endl;
+    //}
+
+    try {
+        cout << "befor foo2()" << endl;
+        foo2();
+        cout << "after foo2()" << endl; // ????
     }
-    else {
-        cout << "jumped back to setjmp" << endl;
+    catch(int e) {
+        cout << "jumped back to setjmp with number: "<< e << endl;
     }
 
     return 0;
