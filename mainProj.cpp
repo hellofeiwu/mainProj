@@ -3,94 +3,27 @@
 
 
 #include <iostream>
-#include "SmartPointer.h"
-#include "Rational.h"
+#include <csetjmp>
+
 using namespace std;
 
-class MySharedClass {
-public:
-    MySharedClass(){
-        cout << "in MySharedClass()" << endl;
-    }
-    ~MySharedClass() {
-        cout << "in ~MySharedClass()" << endl;
-    }
-    void doSomething() {
-        cout << "in doSomething()" << endl;
-    }
-};
+jmp_buf jumpBuffer;
 
-class SharedB;
-class SharedA {
-public:
-    shared_ptr<SharedB> _shpB;
-    SharedA() {
-        cout << "in SharedA()" << endl;
-    }
-    ~SharedA() {
-        cout << "in ~SharedA()" << endl;
-    }
-};
-
-class SharedB {
-public:
-    weak_ptr<SharedA> _shpA;
-    SharedB() {
-        cout << "in SharedB()" << endl;
-    }
-    ~SharedB() {
-        cout << "in ~SharedB()" << endl;
-    }
-};
+void foo() {
+    cout << "enter foo()" << endl;
+    longjmp(jumpBuffer, 1);
+    cout << "exit foo()" << endl;
+}
 
 int main()
 {
-    //Rational* p = new Rational(3,4);
-    //SmartPointer<Rational> sp(p);
-
-    //if (sp) {
-    //    cout << *sp << endl;
-    //    cout << sp->getNum() << endl;
-    //}
-
-    //SmartPointer<Rational> sp2;
-    ////SmartPointer<Rational> sp3(new Rational(5, 9));
-    //sp2 = move(sp);
-
-    // use shared pointer
-    /*shared_ptr<MySharedClass> shp = make_shared<MySharedClass>();
-    shared_ptr<MySharedClass> shp2(shp);
-    shared_ptr<MySharedClass> shp3 = shp;
-
-    shp->doSomething();
-    shp2->doSomething();
-    shp3->doSomething();*/
-    
-    // loop share
-    shared_ptr<SharedA> shpA = make_shared<SharedA>();
-    shared_ptr<SharedB> shpB = make_shared<SharedB>();
-    shpA->_shpB = shpB;
-    shpB->_shpA = shpA;
-    auto p = shpB->_shpA.lock();
-    cout<< p->_shpB << endl;
-
-    shared_ptr<MySharedClass> shp = make_shared<MySharedClass>();
-    weak_ptr<MySharedClass> wp = shp;
-    shp->doSomething();
-
-    if (auto p = wp.lock()) {
-        p->doSomething();
+    if (setjmp(jumpBuffer)==0) {
+        cout << "befor foo()" << endl;
+        foo();
+        cout << "after foo()" << endl;
     }
     else {
-        cout << "wp.lock() faile" << endl;
-    }
-
-    shp.reset();
-    if (auto p = wp.lock()) {
-        p->doSomething();
-    }
-    else {
-        cout << "wp.lock() faile" << endl;
+        cout << "jumped back to setjmp" << endl;
     }
 
     return 0;
