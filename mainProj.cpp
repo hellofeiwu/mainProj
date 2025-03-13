@@ -3,42 +3,71 @@
 
 
 #include <iostream>
-#include <csetjmp>
+#include <fstream>
+#include <string>
 
 using namespace std;
 
-jmp_buf jumpBuffer;
+class FileIO {
+public:
+    void openFile() {
+        _file = make_unique<fstream>(_fileName);
+        if (!_file->is_open()) {
+            throw runtime_error("failed to open file");
+        }
+    }
+    void closeFile() {
+        if (_file && _file->is_open()) {
+            _file->close();
+        }
+    }
 
-void foo() {
-    cout << "enter foo()" << endl;
-    longjmp(jumpBuffer, 1);
-    cout << "exit foo()" << endl; // ????
-}
+    void writeFile(const string& data) {
+        if (!_file) {
+            throw runtime_error("failed to open file before write");
+        }
+        (*_file) << data;
+        if (_file->fail()) {
+            throw runtime_error("failed to write file");
+        }
+    }
 
-void foo2() {
-    cout << "enter foo2()" << endl;
-    throw 1;
-    cout << "exit foo2()" << endl; // ????
-}
+    string readFile() {
+        if (!_file) {
+            throw runtime_error("failed to open file before read");
+        }
+        string data;
+        getline(*_file,data);
+        if (_file->bad()) {
+            throw runtime_error("failed to read file");
+        }
+        
+        return data;
+    }
 
+    FileIO(const string& fileName):_fileName(fileName), _file(nullptr) {
+    }
+    ~FileIO() {
+        closeFile();
+    }
+private:
+    unique_ptr<fstream> _file;
+    string _fileName;
+};
 int main()
 {
-    //if (setjmp(jumpBuffer)==0) {
-    //    cout << "befor foo()" << endl;
-    //    foo();
-    //    cout << "after foo()" << endl; // ????
-    //}
-    //else {
-    //    cout << "jumped back to setjmp" << endl;
-    //}
-
     try {
-        cout << "befor foo2()" << endl;
-        foo2();
-        cout << "after foo2()" << endl; // ????
+        FileIO file("myFile.txt");
+        file.openFile(); // make sure you have created the file, otherwise it will throw exception
+        file.writeFile("my new data");
+        file.closeFile();
+
+        file.openFile();
+        cout << file.readFile() << endl;
+        file.closeFile();
     }
-    catch(int e) {
-        cout << "jumped back to setjmp with number: "<< e << endl;
+    catch (const exception e) {
+        cout << "Exception: " << e.what() << endl;
     }
 
     return 0;
