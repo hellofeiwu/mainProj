@@ -60,7 +60,7 @@ int main()
         FileIO file("myFile.txt");
         file.openFile(); // make sure you have created the file, otherwise it will throw exception
         file.writeFile("my new data");
-        file.closeFile();
+        file.closeFile(); // need to close file and reopen file to read the content, otherwise cannot read anything
 
         file.openFile();
         cout << file.readFile() << endl;
