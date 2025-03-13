@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -56,15 +57,30 @@ private:
 };
 int main()
 {
-    try {
-        FileIO file("myFile.txt");
-        file.openFile(); // make sure you have created the file, otherwise it will throw exception
-        file.writeFile("my new data");
-        file.closeFile(); // need to close file and reopen file to read the content, otherwise cannot read anything
+    //try {
+    //    FileIO file("myFile.txt");
+    //    file.openFile(); // make sure you have created the file, otherwise it will throw exception
+    //    file.writeFile("my new data");
+    //    file.closeFile(); // need to close file and reopen file to read the content, otherwise cannot read anything
 
-        file.openFile();
-        cout << file.readFile() << endl;
-        file.closeFile();
+    //    file.openFile();
+    //    cout << file.readFile() << endl;
+    //    file.closeFile();
+    //}
+    //catch (const exception e) {
+    //    cout << "Exception: " << e.what() << endl;
+    //}
+
+    vector<int> arr = {1,2,3,4,5};
+
+    cout << "type in an index:" << endl;
+    int i;
+    cin >> i;
+    try {
+        if (i<0 || i>arr.size()-1) {
+            throw out_of_range("index is out of range");
+        }
+        cout << "the number you choose is: " << arr[i] << endl;
     }
     catch (const exception e) {
         cout << "Exception: " << e.what() << endl;
