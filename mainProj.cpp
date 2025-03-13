@@ -55,8 +55,32 @@ private:
     unique_ptr<fstream> _file;
     string _fileName;
 };
+
+class Base {
+public:
+    virtual ~Base() {}
+};
+class Child :public Base {
+
+};
 int main()
 {
+
+    //Base* bp=new Base;
+    //Child* cp = dynamic_cast<Child*>(bp);
+
+    Child* cp = new Child;
+    Base* bp = dynamic_cast<Base*>(cp);
+
+    try {
+        if (!bp) {
+            throw bad_cast();
+        }
+        cout << bp << endl;
+    }
+    catch (const exception& e) {
+        cout << "Exception: " << e.what() << endl;
+    }
     //try {
     //    FileIO file("myFile.txt");
     //    file.openFile(); // make sure you have created the file, otherwise it will throw exception
@@ -71,7 +95,7 @@ int main()
     //    cout << "Exception: " << e.what() << endl;
     //}
 
-    vector<int> arr = {1,2,3,4,5};
+    /*vector<int> arr = {1,2,3,4,5};
 
     cout << "type in an index:" << endl;
     int i;
@@ -84,7 +108,7 @@ int main()
     }
     catch (const exception e) {
         cout << "Exception: " << e.what() << endl;
-    }
+    }*/
 
     return 0;
 }
