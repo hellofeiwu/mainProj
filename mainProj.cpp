@@ -9,108 +9,116 @@
 
 using namespace std;
 
-class FileIO {
+class TestNd {
 public:
-    void openFile() {
-        _file = make_unique<fstream>(_fileName);
-        if (!_file->is_open()) {
-            throw runtime_error("failed to open file");
-        }
+    TestNd(int data):_data(data) {
+        cout << "in TestNd(int data), _data: "<<_data << endl;
     }
-    void closeFile() {
-        if (_file && _file->is_open()) {
-            _file->close();
-        }
+    ~TestNd() {
+        cout << "in ~TestNd()" << endl;
     }
-
-    void writeFile(const string& data) {
-        if (!_file) {
-            throw runtime_error("failed to open file before write");
+    // operator new
+    void* operator new(size_t size0) { // ?????????????????
+        // ??????????static?????????????????
+        cout << "in operator new(size_t size0), size0: " << size0 << endl;
+        void* p0 = malloc(size0);
+        if (!p0) {
+            throw bad_alloc();
         }
-        (*_file) << data;
-        if (_file->fail()) {
-            throw runtime_error("failed to write file");
-        }
+        return p0;
     }
 
-    string readFile() {
-        if (!_file) {
-            throw runtime_error("failed to open file before read");
-        }
-        string data;
-        getline(*_file,data);
-        if (_file->bad()) {
-            throw runtime_error("failed to read file");
-        }
-        
-        return data;
+    // placement new ??????????operator new???????????size???????
+    // size????????p???????p??????????????
+    void* operator new(size_t size1, void* p1) {
+        cout << "in placement new(size_t size1, void* p1), size1: " << size1 
+            << ", p1: " << p1 << endl;
+        return p1;
     }
 
-    FileIO(const string& fileName):_fileName(fileName), _file(nullptr) {
+    // operator delete
+    void operator delete(void* p2) {
+        cout << "in operator delete(void* p2), p2: " <<p2<< endl;
+        free(p2);
     }
-    ~FileIO() {
-        closeFile();
+
+    // placement delete
+    void operator delete(void* p3, void* p4) {
+        cout << "in placement delete(void* p3, void* p4), p3: " 
+            << p3 <<", p4: "<<p4 << endl;
+        ((TestNd*)p3)->~TestNd();
     }
 private:
-    unique_ptr<fstream> _file;
-    string _fileName;
+    int _data;
 };
 
-class Base {
+class TestNdArr {
 public:
-    virtual ~Base() {}
-};
-class Child :public Base {
+    TestNdArr(int size):_arraySize(size),_arrayDataP(nullptr) {
+        cout << "in TestNdArr(int size), size: "<<_arraySize << endl;
+        _arrayDataP = static_cast<TestNd*>(operator new[](sizeof(TestNd) * _arraySize)); //???????TestNd??size?????????
+        //????_arrayDataP?????????????????TestNd? placement new ???????
+        //????size?4
+        for (int i = 0; i < _arraySize; i++) {
+            new(&_arrayDataP[i]) TestNd(i);
+        }
+    }
+    ~TestNdArr() {
+        cout << "in ~TestNdArr()" << endl;
+        for (int i = 0; i < _arraySize; i++) {
+            _arrayDataP[i].~TestNd();
+        }
+        operator delete[](_arrayDataP);
+    }
 
+    // operator new[]
+    void* operator new[](size_t size) {
+        cout <<"in operator new[](size_t size), size: "<<size << endl;
+        return ::operator new[](size); // ????????????????????
+    }
+
+    // placement new[]
+    void* operator new[](size_t size1, void* p1) {
+        cout << "in placement new[](size_t size1, void* p1), size1: " << size1
+            << ", p1: " << p1 << endl;
+        return p1;
+    }
+
+    // operator delete[]
+    void operator delete[](void* p2) {
+        cout << "in operator delete[](void* p2), p2: " << p2 << endl;
+        ::operator delete[](p2);
+    }
+
+    TestNd& operator[](int i) {
+        return _arrayDataP[i];
+    }
+
+private:
+    int _arraySize;
+    TestNd* _arrayDataP;
 };
+
 int main()
 {
+    //void* ptr = TestNd::operator new(sizeof(TestNd));
+    //TestNd* t = new(ptr) TestNd(10); // ???new?? placement new
 
-    //Base* bp=new Base;
-    //Child* cp = dynamic_cast<Child*>(bp);
+    ////TestNd::operator delete(t, nullptr);
 
-    Child* cp = new Child;
-    Base* bp = dynamic_cast<Base*>(cp);
+    ////TestNd::operator delete(ptr);
 
-    try {
-        if (!bp) {
-            throw bad_cast();
-        }
-        cout << bp << endl;
+    //delete t;
+
+    int size = 3;
+    TestNdArr* arr = new TestNdArr(size);
+    for (int i = 0; i < size; i++) {
+        cout << "value at " << i << ", pointer: " << &(*arr)[i] << endl;
+        // ??(*arr)[i]???????????operator[]??
     }
-    catch (const exception& e) {
-        cout << "Exception: " << e.what() << endl;
-    }
-    //try {
-    //    FileIO file("myFile.txt");
-    //    file.openFile(); // make sure you have created the file, otherwise it will throw exception
-    //    file.writeFile("my new data");
-    //    file.closeFile(); // need to close file and reopen file to read the content, otherwise cannot read anything
+    cout << arr << endl;
+    delete arr;
 
-    //    file.openFile();
-    //    cout << file.readFile() << endl;
-    //    file.closeFile();
-    //}
-    //catch (const exception e) {
-    //    cout << "Exception: " << e.what() << endl;
-    //}
-
-    /*vector<int> arr = {1,2,3,4,5};
-
-    cout << "type in an index:" << endl;
-    int i;
-    cin >> i;
-    try {
-        if (i<0 || i>arr.size()-1) {
-            throw out_of_range("index is out of range");
-        }
-        cout << "the number you choose is: " << arr[i] << endl;
-    }
-    catch (const exception e) {
-        cout << "Exception: " << e.what() << endl;
-    }*/
-
-    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
