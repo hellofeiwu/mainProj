@@ -9,13 +9,63 @@
 
 using namespace std;
 
+class MemoryPool {
+public:
+    MemoryPool(size_t size):objectSize(size) {
+    }
+    ~MemoryPool() {
+        for (int* block:memoryBlocks) {
+            delete[] block;
+        }
+    }
+
+    void* allocate() {
+        if (freeList.empty()) {
+            int* block = new int[chunk_size*objectSize]; // ??????400??????
+            memoryBlocks.push_back(block);
+            for (int i = 0; i < chunk_size; i++) {
+                freeList.push_back(block+i*objectSize); // ??4??????char????
+                // ?????32??????size?4????????TestNd?placement new??
+                // ????size??4?????????
+            }
+        }
+
+        void* p= freeList.back();
+        freeList.pop_back();
+        return p;
+    }
+
+    void deallocate(void* p) {
+        freeList.push_back(p);
+    }
+
+    void* allocateArr(int arrSize) {
+        int* block = new int[arrSize*objectSize]; // ??????12????int???
+        // ??????12*4=48???
+        memoryBlocks.push_back(block);
+        return block;
+    }
+    void deallocateArr(void* p) {
+        memoryBlocks.erase(
+            remove(memoryBlocks.begin(),memoryBlocks.end(),p),
+            memoryBlocks.end()
+        );
+        delete[] p;
+    }
+private:
+    int chunk_size = 100;
+    vector<int*> memoryBlocks;
+    vector<void*> freeList;
+    size_t objectSize;
+};
+
 class TestNd {
 public:
     TestNd(int data):_data(data) {
         cout << "in TestNd(int data), _data: "<<_data << endl;
     }
     ~TestNd() {
-        cout << "in ~TestNd()" << endl;
+        cout << "in ~TestNd(), _data: "<<_data << endl;
     }
     // operator new
     void* operator new(size_t size0) { // ?????????????????
@@ -101,8 +151,8 @@ private:
 
 int main()
 {
-    //void* ptr = TestNd::operator new(sizeof(TestNd));
-    //TestNd* t = new(ptr) TestNd(10); // ???new?? placement new
+    void* ptr = TestNd::operator new(2);
+    TestNd* t = new(ptr) TestNd(10); // ???new?? placement new
 
     ////TestNd::operator delete(t, nullptr);
 
@@ -110,14 +160,31 @@ int main()
 
     //delete t;
 
-    int size = 3;
-    TestNdArr* arr = new TestNdArr(size);
-    for (int i = 0; i < size; i++) {
-        cout << "value at " << i << ", pointer: " << &(*arr)[i] << endl;
-        // ??(*arr)[i]???????????operator[]??
-    }
-    cout << arr << endl;
-    delete arr;
+    //int size = 3;
+    //TestNdArr* arr = new TestNdArr(size);
+    //for (int i = 0; i < size; i++) {
+    //    cout << "value at " << i << ", pointer: " << &(*arr)[i] << endl;
+    //    // ??(*arr)[i]???????????operator[]??
+    //}
+
+    //delete arr;
+
+    //MemoryPool memoryPool(sizeof(TestNd));
+
+    //TestNd* tp = new(memoryPool.allocate()) TestNd(5);
+    //tp->~TestNd();
+    //memoryPool.deallocate(tp);
+
+    //TestNd* arrTp = (TestNd*)memoryPool.allocateArr(3);
+    //for (int i = 0; i < 3; i++) { // ???????????????????
+    //    // ??c++???????????????????
+    //    new(&arrTp[i]) TestNd(i);
+    //}
+    //for (int i = 0; i < 3; i++) {
+    //    arrTp[i].~TestNd();
+    //}
+    //memoryPool.deallocateArr(arrTp);
+    return 0;
 
 }
 
