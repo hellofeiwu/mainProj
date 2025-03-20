@@ -46,20 +46,58 @@ class A22 {
 public:
     A22() {}
     virtual ~A22() {}
-    virtual void testV() {}
-    void test() {}
-    static void testS() {}
+    virtual void testV() {
+        cout << "A22: testV()" << endl;
+    }
+    void test() { cout << "A22: test()" << endl; }
+    static void testS() { cout << "A22: testS()" << endl; }
+};
+
+class B22 :public A22 {
+public:
+    B22() {}
+    virtual ~B22() {}
+    virtual void testV() { cout << "B22: testV" << endl; }
+    void test() { cout << "B22: test()" << endl; }
+    static void testS() { cout << "B22: testS()" << endl; }
+};
+
+class Base1 {
+public:
+    virtual void func1() {}
+};
+
+class Base2 {
+    virtual void func2() {}
+};
+
+class Child :public Base1, Base2 {
+public:
+    virtual void func2() {}
+    virtual void func3() {}
 };
 
 int main()
 {
+    //A22 a;
+    //B22 b;
+    //cout << sizeof(b) << endl;
+    //a.testV();
+    //a.test();
+    //b.testV();
+    //b.test();
+    //A22::testS();
 
-    cout << sizeof(A) << endl;     // 1
-    cout << sizeof(A0) << endl;    // 1
-    cout << sizeof(A1) << endl;     // 4
-    cout << sizeof(A11) << endl;    // 8
-    cout << sizeof(A2) << endl;     // 4
-    cout << sizeof(A22) << endl;    // 4
+    //A22* arr[2];
+    //arr[0] = &a;
+    //arr[1] = &b;
+
+    //arr[0]->testV(); // ?????vptr?????
+    //arr[0]->test(); // ???????????????????????????????????????
+    //arr[1]->testV(); // ?????vptr?????
+    //arr[1]->test(); // ???????????????????????????????????????
+    Child c;
+    cout << sizeof(c) << endl;
 
     return 0;
 }
