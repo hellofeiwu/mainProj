@@ -9,95 +9,32 @@
 
 using namespace std;
 
-class A {};
-
-class A0 {
-public :
-    A0() {}
-    ~A0() {}
-};
-
-class A1 {
+class Shape {
 public:
-    A1():_a(0) {}
-    ~A1() {}
-private:
-    int _a;
+    virtual void draw() {}
 };
-
-class A11 {
+class Circle :public Shape {
 public:
-    A11() :_a(0),_b(0) {}
-    ~A11() {}
-private:
-    int _a;
-    int _b;
-};
-
-class A2 {
-public:
-    A2() {}
-    virtual ~A2() {}
-    void test() {}
-    static void testS() {}
-};
-
-class A22 {
-public:
-    A22() {}
-    virtual ~A22() {}
-    virtual void testV() {
-        cout << "A22: testV()" << endl;
+    virtual void draw() {
+        cout << "circle draw" << endl;
     }
-    void test() { cout << "A22: test()" << endl; }
-    static void testS() { cout << "A22: testS()" << endl; }
 };
-
-class B22 :public A22 {
+class Rec :public Shape {
 public:
-    B22() {}
-    virtual ~B22() {}
-    virtual void testV() { cout << "B22: testV" << endl; }
-    void test() { cout << "B22: test()" << endl; }
-    static void testS() { cout << "B22: testS()" << endl; }
-};
-
-class Base1 {
-public:
-    virtual void func1() {}
-};
-
-class Base2 {
-    virtual void func2() {}
-};
-
-class Child :public Base1, Base2 {
-public:
-    virtual void func2() {}
-    virtual void func3() {}
+    virtual void draw() {
+        cout << "Rec draw" << endl;
+    }
 };
 
 int main()
 {
-    //A22 a;
-    //B22 b;
-    //cout << sizeof(b) << endl;
-    //a.testV();
-    //a.test();
-    //b.testV();
-    //b.test();
-    //A22::testS();
-
-    //A22* arr[2];
-    //arr[0] = &a;
-    //arr[1] = &b;
-
-    //arr[0]->testV(); // ?????vptr?????
-    //arr[0]->test(); // ???????????????????????????????????????
-    //arr[1]->testV(); // ?????vptr?????
-    //arr[1]->test(); // ???????????????????????????????????????
-    Child c;
-    cout << sizeof(c) << endl;
+    Shape* s = new Circle;
+    cout << sizeof(s) << endl;
+    s->draw();
+    delete s;
+    s = new Rec;
+    s->draw();
+    delete s;
 
     return 0;
 }
