@@ -5,36 +5,31 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
+#include "Singleton.h"
 
 using namespace std;
 
-class Shape {
-public:
-    virtual void draw() {}
-};
-class Circle :public Shape {
-public:
-    virtual void draw() {
-        cout << "circle draw" << endl;
-    }
-};
-class Rec :public Shape {
-public:
-    virtual void draw() {
-        cout << "Rec draw" << endl;
-    }
-};
-
 int main()
 {
-    Shape* s = new Circle;
-    cout << sizeof(s) << endl;
-    s->draw();
-    delete s;
-    s = new Rec;
-    s->draw();
-    delete s;
+    Singleton* s1 = Singleton::getInstance(10);
+    Singleton* s2 = Singleton::getInstance(20);
+    cout << s1->getData() << endl;
+    cout << s2->getData() << endl;
+
+    Singleton11& s11 = Singleton11::getInstance(30);
+    Singleton11& s12 = Singleton11::getInstance(40);
+    cout << s11.getData() << endl;
+    cout << s12.getData() << endl;
+
+    SingletonH& sh1 = SingletonH::getInstance(50);
+    SingletonH& sh2 = SingletonH::getInstance(60);
+    cout << sh1.getData() << endl;
+    cout << sh2.getData() << endl;
+    cout << &sh1 << endl;
+    cout << &sh2 << endl;
+
+    cout << Singleton98::getInstance(70)->getData() << endl;
+    cout << Singleton98::getInstance(80)->getData() << endl;
 
     return 0;
 }
