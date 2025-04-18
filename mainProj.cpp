@@ -5,31 +5,16 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "Singleton.h"
+#include "Logger.h"
 
 using namespace std;
 
 int main()
 {
-    Singleton* s1 = Singleton::getInstance(10);
-    Singleton* s2 = Singleton::getInstance(20);
-    cout << s1->getData() << endl;
-    cout << s2->getData() << endl;
-
-    Singleton11& s11 = Singleton11::getInstance(30);
-    Singleton11& s12 = Singleton11::getInstance(40);
-    cout << s11.getData() << endl;
-    cout << s12.getData() << endl;
-
-    SingletonH& sh1 = SingletonH::getInstance(50);
-    SingletonH& sh2 = SingletonH::getInstance(60);
-    cout << sh1.getData() << endl;
-    cout << sh2.getData() << endl;
-    cout << &sh1 << endl;
-    cout << &sh2 << endl;
-
-    cout << Singleton98::getInstance(70)->getData() << endl;
-    cout << Singleton98::getInstance(80)->getData() << endl;
+    Logger& logger = Logger::getInstance();
+    logger.openFile("myLogFile");
+    logger.log("hello", LogLevel::WARNING, __FILE__, __LINE__);
+    logger.log("world", LogLevel::ERROR, __FILE__, __LINE__);
 
     return 0;
 }
