@@ -1,20 +1,21 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include "Logger.h"
+#include "WindowsUI.h"
+#include "MacUI.h"
 
 using namespace std;
 
 int main()
 {
-    Logger& logger = Logger::getInstance();
-    logger.openFile("myLogFile");
-    logger.log("hello", LogLevel::WARNING, __FILE__, __LINE__);
-    logger.log("world", LogLevel::ERROR, __FILE__, __LINE__);
+    shared_ptr<UIFactory> factory;
+    factory = make_shared<WindowsUIFactory>();
+    shared_ptr<Button> winButton = factory->createButton();
+    winButton->click();
+
+    factory = make_shared<MacUIFactory>();
+    shared_ptr<Button> macButton = factory->createButton();
+    macButton->click();
 
     return 0;
 }
