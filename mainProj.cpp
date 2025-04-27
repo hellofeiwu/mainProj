@@ -1,21 +1,35 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "WindowsUI.h"
-#include "MacUI.h"
+#include "ComputerBuilder.h"
+#include "MyComputerBuilder.h"
 
 using namespace std;
 
+class Director {
+public:
+    Computer buildComputer(ComputerBuilder& builder) {
+        builder.buildCpu();
+        builder.buildMemory();
+        builder.buildStorage();
+        return builder.createComputer();
+    }
+};
+
 int main()
 {
-    shared_ptr<UIFactory> factory;
-    factory = make_shared<WindowsUIFactory>();
-    shared_ptr<Button> winButton = factory->createButton();
-    winButton->click();
+    Director d;
+    shared_ptr<WinComputerBuilder> winPcBuilder = make_shared<WinComputerBuilder>();
+    Computer pc1 = d.buildComputer(*winPcBuilder);
+    pc1.show();
 
-    factory = make_shared<MacUIFactory>();
-    shared_ptr<Button> macButton = factory->createButton();
-    macButton->click();
+    shared_ptr<MacComputerBuilder> macPcBuilder = make_shared<MacComputerBuilder>();
+    Computer pc2 = d.buildComputer(*macPcBuilder);
+    pc2.show();
+
+    MyComputerBuilder myPcBuilder;
+    Computer pc3 = myPcBuilder.buildCpu("ggg").buildMemory("hhh").buildStorage("iii").createComputer();
+    pc3.show();
 
     return 0;
 }
