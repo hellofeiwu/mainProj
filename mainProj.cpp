@@ -1,35 +1,14 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "ComputerBuilder.h"
-#include "MyComputerBuilder.h"
-
-using namespace std;
-
-class Director {
-public:
-    Computer buildComputer(ComputerBuilder& builder) {
-        builder.buildCpu();
-        builder.buildMemory();
-        builder.buildStorage();
-        return builder.createComputer();
-    }
-};
+#include "MyPrototype.h"
 
 int main()
 {
-    Director d;
-    shared_ptr<WinComputerBuilder> winPcBuilder = make_shared<WinComputerBuilder>();
-    Computer pc1 = d.buildComputer(*winPcBuilder);
-    pc1.show();
-
-    shared_ptr<MacComputerBuilder> macPcBuilder = make_shared<MacComputerBuilder>();
-    Computer pc2 = d.buildComputer(*macPcBuilder);
-    pc2.show();
-
-    MyComputerBuilder myPcBuilder;
-    Computer pc3 = myPcBuilder.buildCpu("ggg").buildMemory("hhh").buildStorage("iii").createComputer();
-    pc3.show();
+    shared_ptr<Prototype> myPrototype = make_shared<MyPrototype>(1, "aa");
+    shared_ptr<Prototype> clonedP = myPrototype->clone();
+    myPrototype->showInfo();
+    clonedP->showInfo();
 
     return 0;
 }
