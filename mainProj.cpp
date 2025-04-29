@@ -1,14 +1,15 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "MyPrototype.h"
+#include "MySensor.h"
 
 int main()
 {
-    shared_ptr<Prototype> myPrototype = make_shared<MyPrototype>(1, "aa");
-    shared_ptr<Prototype> clonedP = myPrototype->clone();
-    myPrototype->showInfo();
-    clonedP->showInfo();
+    shared_ptr<WinSensor> winSensor = make_shared<WinSensor>();
+    winSensor->getDataAndRecognize();
+
+    shared_ptr<MacSensor> macSenseor = make_shared<MacSensor>();
+    macSenseor->getDataAndRecognize();
 
     return 0;
 }
