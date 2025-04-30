@@ -1,15 +1,17 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "MySensor.h"
+#include "MyPlugins.h"
 
 int main()
 {
-    shared_ptr<WinSensor> winSensor = make_shared<WinSensor>();
-    winSensor->getDataAndRecognize();
-
-    shared_ptr<MacSensor> macSenseor = make_shared<MacSensor>();
-    macSenseor->getDataAndRecognize();
+    PluginsManager pluginsManager;
+    shared_ptr<MyPlugin1> p1 = make_shared<MyPlugin1>();
+    shared_ptr<MyPlugin2> p2 = make_shared<MyPlugin2>();
+    pluginsManager.addPlugin(p1);
+    pluginsManager.addPlugin(p2);
+    pluginsManager.executeAllPlugins();
+    pluginsManager.unloadAllPlugins();
 
     return 0;
 }
