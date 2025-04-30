@@ -1,17 +1,19 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "MyPlugins.h"
+#include "Decorator.h"
 
 int main()
 {
-    PluginsManager pluginsManager;
-    shared_ptr<MyPlugin1> p1 = make_shared<MyPlugin1>();
-    shared_ptr<MyPlugin2> p2 = make_shared<MyPlugin2>();
-    pluginsManager.addPlugin(p1);
-    pluginsManager.addPlugin(p2);
-    pluginsManager.executeAllPlugins();
-    pluginsManager.unloadAllPlugins();
+    shared_ptr<Stream> myStream = make_shared<MyStream>();
+    shared_ptr<Stream> decorator = make_shared<Decorator>(myStream);
+    decorator->doSomething();
+
+    shared_ptr<Stream> deco2 = make_shared<Decorator2>(decorator);
+    deco2->doSomething();
+
+    shared_ptr<Stream> deco3 = make_shared<Decorator3>(deco2);
+    deco3->doSomething();
 
     return 0;
 }
