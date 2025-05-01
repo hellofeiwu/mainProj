@@ -1,28 +1,59 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "FileSystemComponent.h"
+#include "WebAccess.h"
+
+void access(const string& website) {
+    shared_ptr<WebAccess> myWebAccess = make_shared<MyWebAccess>();
+    shared_ptr<WebAccess> proxyAccess = make_shared<ProxyAccess>(myWebAccess);
+
+    try {
+        proxyAccess->connectTo(website);
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
+}
+
+void dynaAccess(const string& website) {
+    shared_ptr<WebAccess> dynaProxyAccess = make_shared<DynaProxyAccess>([](const string& website) {
+        shared_ptr<WebAccess> myWebAccess = make_shared<MyWebAccess>();
+        myWebAccess->connectTo(website);
+        });
+    try {
+        dynaProxyAccess->connectTo(website);
+    }
+    catch (exception& e) {
+        cout << e.what() << endl;
+    }
+}
+
+void delayAccess(const string& website) {
+    shared_ptr<WebAccess> delayProxyAccess = make_shared<DelayProxyAccess>();
+    try {
+        delayProxyAccess->connectTo(website);
+    }
+    catch (exception e) {
+        cout << e.what() << endl;
+    }
+}
 
 int main()
 {
-//root
-    //A: 1.txt, 2.txt
-    //B: 3.txt
-    shared_ptr<FileSystemComponent> file1 = make_shared<File>("1.txt");
-    shared_ptr<FileSystemComponent> file2 = make_shared<File>("2.txt");
-    shared_ptr<FileSystemComponent> file3 = make_shared<File>("3.txt");
+    //access("google.com");
+    //access("baidu.com");
+    //access("qq.com");
+    //access("taobao.com");
 
-    shared_ptr<FileSystemComponent> dirA = make_shared<Dir>("A");
-    shared_ptr<FileSystemComponent> dirB = make_shared<Dir>("B");
-    shared_ptr<FileSystemComponent> dirRoot = make_shared<Dir>("Root");
+    //dynaAccess("google.com");
+    //dynaAccess("baidu.com");
+    //dynaAccess("qq.com");
+    //dynaAccess("taobao.com");
 
-    dirA->add(file1);
-    dirA->add(file2);
-    dirB->add(file3);
-    dirRoot->add(dirA);
-    dirRoot->add(dirB);
-
-    dirRoot->show();
+    delayAccess("google.com");
+    delayAccess("baidu.com");
+    delayAccess("www.qq.com");
+    delayAccess("http://taobao.com");
 
     return 0;
 }
