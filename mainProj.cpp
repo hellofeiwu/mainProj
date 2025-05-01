@@ -1,19 +1,28 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "Decorator.h"
+#include "FileSystemComponent.h"
 
 int main()
 {
-    shared_ptr<Stream> myStream = make_shared<MyStream>();
-    shared_ptr<Stream> decorator = make_shared<Decorator>(myStream);
-    decorator->doSomething();
+//root
+    //A: 1.txt, 2.txt
+    //B: 3.txt
+    shared_ptr<FileSystemComponent> file1 = make_shared<File>("1.txt");
+    shared_ptr<FileSystemComponent> file2 = make_shared<File>("2.txt");
+    shared_ptr<FileSystemComponent> file3 = make_shared<File>("3.txt");
 
-    shared_ptr<Stream> deco2 = make_shared<Decorator2>(decorator);
-    deco2->doSomething();
+    shared_ptr<FileSystemComponent> dirA = make_shared<Dir>("A");
+    shared_ptr<FileSystemComponent> dirB = make_shared<Dir>("B");
+    shared_ptr<FileSystemComponent> dirRoot = make_shared<Dir>("Root");
 
-    shared_ptr<Stream> deco3 = make_shared<Decorator3>(deco2);
-    deco3->doSomething();
+    dirA->add(file1);
+    dirA->add(file2);
+    dirB->add(file3);
+    dirRoot->add(dirA);
+    dirRoot->add(dirB);
+
+    dirRoot->show();
 
     return 0;
 }
