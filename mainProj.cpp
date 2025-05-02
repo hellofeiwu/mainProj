@@ -1,59 +1,81 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "WebAccess.h"
+#include <iostream>
+#include <memory>
 
-void access(const string& website) {
-    shared_ptr<WebAccess> myWebAccess = make_shared<MyWebAccess>();
-    shared_ptr<WebAccess> proxyAccess = make_shared<ProxyAccess>(myWebAccess);
+using namespace std;
 
-    try {
-        proxyAccess->connectTo(website);
-    }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
-}
+class Render {
+public:
+    virtual void renderShape() = 0;
+};
 
-void dynaAccess(const string& website) {
-    shared_ptr<WebAccess> dynaProxyAccess = make_shared<DynaProxyAccess>([](const string& website) {
-        shared_ptr<WebAccess> myWebAccess = make_shared<MyWebAccess>();
-        myWebAccess->connectTo(website);
-        });
-    try {
-        dynaProxyAccess->connectTo(website);
+class OpenGLRender :public Render {
+public:
+    virtual void renderShape() {
+        cout << "open gl render shape" << endl;
     }
-    catch (exception& e) {
-        cout << e.what() << endl;
-    }
-}
+};
 
-void delayAccess(const string& website) {
-    shared_ptr<WebAccess> delayProxyAccess = make_shared<DelayProxyAccess>();
-    try {
-        delayProxyAccess->connectTo(website);
+class DirXRender :public Render {
+public:
+    virtual void renderShape() {
+        cout << "DirX render shape" << endl;
     }
-    catch (exception e) {
-        cout << e.what() << endl;
+};
+
+class Shape {
+protected:
+    shared_ptr<Render> _render;
+public:
+    Shape(shared_ptr<Render> render):_render(render) {}
+    virtual void draw() = 0;
+
+};
+
+class Circle :public Shape {
+public:
+    Circle(shared_ptr<Render> render):Shape(render) {
     }
-}
+    virtual void draw() {
+        cout << "draw circle" << endl;
+        _render->renderShape();
+    }
+
+};
+
+class Square :public Shape {
+public:
+    Square(shared_ptr<Render> render) :Shape(render) {
+    }
+    virtual void draw() {
+        cout << "draw square" << endl;
+        _render->renderShape();
+    }
+};
+
+class Triangle : public Shape {
+public:
+    Triangle(shared_ptr<Render> render) :Shape(render) {
+    }
+    virtual void draw() {
+        cout << "draw triangle" << endl;
+        _render->renderShape();
+    }
+};
 
 int main()
 {
-    //access("google.com");
-    //access("baidu.com");
-    //access("qq.com");
-    //access("taobao.com");
+    shared_ptr<Render> openGLRender = make_shared<OpenGLRender>();
+    shared_ptr<Shape> circle = make_shared<Circle>(openGLRender);
+    circle->draw();
 
-    //dynaAccess("google.com");
-    //dynaAccess("baidu.com");
-    //dynaAccess("qq.com");
-    //dynaAccess("taobao.com");
-
-    delayAccess("google.com");
-    delayAccess("baidu.com");
-    delayAccess("www.qq.com");
-    delayAccess("http://taobao.com");
+    auto dirXRender = make_shared<DirXRender>();
+    auto square = make_shared<Square>(dirXRender);
+    auto triangle = make_shared<Triangle>(dirXRender);
+    square->draw();
+    triangle->draw();
 
     return 0;
 }
