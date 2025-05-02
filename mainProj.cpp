@@ -3,79 +3,53 @@
 
 #include <iostream>
 #include <memory>
+#include <map>
 
 using namespace std;
 
-class Render {
+class Font {
 public:
-    virtual void renderShape() = 0;
+    virtual void applyFont() = 0;
 };
 
-class OpenGLRender :public Render {
+class FontA : public Font {
 public:
-    virtual void renderShape() {
-        cout << "open gl render shape" << endl;
-    }
-};
-
-class DirXRender :public Render {
-public:
-    virtual void renderShape() {
-        cout << "DirX render shape" << endl;
+    virtual void applyFont() {
+        cout << "apply font A" << endl;
     }
 };
 
-class Shape {
-protected:
-    shared_ptr<Render> _render;
+class DefaultFont : public Font {
 public:
-    Shape(shared_ptr<Render> render):_render(render) {}
-    virtual void draw() = 0;
-
-};
-
-class Circle :public Shape {
-public:
-    Circle(shared_ptr<Render> render):Shape(render) {
-    }
-    virtual void draw() {
-        cout << "draw circle" << endl;
-        _render->renderShape();
-    }
-
-};
-
-class Square :public Shape {
-public:
-    Square(shared_ptr<Render> render) :Shape(render) {
-    }
-    virtual void draw() {
-        cout << "draw square" << endl;
-        _render->renderShape();
+    virtual void applyFont() {
+        cout << "apply default font" << endl;
     }
 };
 
-class Triangle : public Shape {
+class FontFactory {
+private:
+    map<char, shared_ptr<Font>> _fonts;
 public:
-    Triangle(shared_ptr<Render> render) :Shape(render) {
-    }
-    virtual void draw() {
-        cout << "draw triangle" << endl;
-        _render->renderShape();
+    virtual shared_ptr<Font> getFont(char key) {
+        if (key == 'a') {
+            _fonts[key] = make_shared<FontA>();
+        }
+        else {
+            _fonts[key] = make_shared<DefaultFont>();
+        }
+        return _fonts[key];
     }
 };
 
 int main()
 {
-    shared_ptr<Render> openGLRender = make_shared<OpenGLRender>();
-    shared_ptr<Shape> circle = make_shared<Circle>(openGLRender);
-    circle->draw();
+    char text[] = "aaeeaaet";
 
-    auto dirXRender = make_shared<DirXRender>();
-    auto square = make_shared<Square>(dirXRender);
-    auto triangle = make_shared<Triangle>(dirXRender);
-    square->draw();
-    triangle->draw();
+    FontFactory factory;
+
+    for (int i = 0; text[i]!='\0'; i++) {
+        factory.getFont(text[i])->applyFont();
+    }
 
     return 0;
 }
