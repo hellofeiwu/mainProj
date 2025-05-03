@@ -1,55 +1,42 @@
 // mainProj.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include <iostream>
-#include <memory>
-#include <map>
-
-using namespace std;
-
-class Font {
-public:
-    virtual void applyFont() = 0;
-};
-
-class FontA : public Font {
-public:
-    virtual void applyFont() {
-        cout << "apply font A" << endl;
-    }
-};
-
-class DefaultFont : public Font {
-public:
-    virtual void applyFont() {
-        cout << "apply default font" << endl;
-    }
-};
-
-class FontFactory {
-private:
-    map<char, shared_ptr<Font>> _fonts;
-public:
-    virtual shared_ptr<Font> getFont(char key) {
-        if (key == 'a') {
-            _fonts[key] = make_shared<FontA>();
-        }
-        else {
-            _fonts[key] = make_shared<DefaultFont>();
-        }
-        return _fonts[key];
-    }
-};
+#include "Observer.h"
 
 int main()
 {
-    char text[] = "aaeeaaet";
+    //shared_ptr<Subject> news = make_shared<News>();
+    //shared_ptr<Observer> ob1 = make_shared<Observer1>();
+    //shared_ptr<Observer> ob2 = make_shared<Observer2>();
+    //shared_ptr<Observer> ob3 = make_shared<Observer3>();
 
-    FontFactory factory;
+    //news->registObservers(ob1);
+    //news->registObservers(ob2);
+    //news->registObservers(ob3);
 
-    for (int i = 0; text[i]!='\0'; i++) {
-        factory.getFont(text[i])->applyFont();
-    }
+    //news->notifyObservers("news1");
+
+    //news->removeObservers(ob2);
+    //news->notifyObservers("news2");
+
+    shared_ptr<StlNews> stlNews = make_shared<StlNews>();
+    shared_ptr<Observer> ob1 = make_shared<Observer1>();
+    shared_ptr<Observer> ob2 = make_shared<Observer2>();
+    shared_ptr<Observer> ob3 = make_shared<Observer3>();
+
+    function<void(const string&)> ob1func = [&](const string& message) {ob1->update(message); };
+    function<void(const string&)> ob2func = [&](const string& message) {ob2->update(message); };
+    function<void(const string&)> ob3func = [&](const string& message) {ob3->update(message); };
+
+    stlNews->registObservers(ob1func);
+    stlNews->registObservers(ob2func);
+    stlNews->registObservers(ob3func);
+
+    stlNews->notifyObservers("stl news1");
+
+    stlNews->removeObservers(ob2func);
+
+    stlNews->notifyObservers("stl news2");
 
     return 0;
 }
